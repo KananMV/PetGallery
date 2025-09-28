@@ -1,0 +1,32 @@
+//
+//  DogNetworkService.swift
+//  PetGallery
+//
+//  Created by Kenan Memmedov on 27.09.25.
+//
+
+import Foundation
+import Alamofire
+
+class DogNetworkService {
+    static let shared = DogNetworkService()
+    
+    private init() {}
+    
+    func getBreeds(completion: @escaping (Result<[Breed], Error>) -> Void) {
+        let url = "\(Constants.dogBaseURL.rawValue)/breeds"
+        
+        let headers: HTTPHeaders = [
+            "x-api-key": Constants.dogApiKey
+        ]
+        
+        AF.request(url, headers: headers).responseDecodable(of: [Breed].self) { response in
+            switch response.result {
+            case .success(let breeds):
+                completion(.success(breeds))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+}
