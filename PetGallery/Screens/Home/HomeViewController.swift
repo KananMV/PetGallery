@@ -7,7 +7,20 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, DogsCollectionViewCellDelegate, CatsCollectionViewCellDelegate {
+    func catsCollectionViewCell(_ cell: CatsCollectionViewCell, didselectCat cat: Cat) {
+        let detailVC = DetailsViewController()
+        detailVC.configure(with: cat)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    
+    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didSelectDog dog: Dog) {
+        let detailVC = DetailsViewController()
+        detailVC.configure(with: dog)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
     
     private let viewModel = HomeViewModel()
     
@@ -37,6 +50,7 @@ class HomeViewController: UIViewController {
         view.dataSource = self
         view.delegate = self
         view.register(DogsCollectionViewCell.self, forCellWithReuseIdentifier: "DogsCollectionViewCell")
+        view.register(CatsCollectionViewCell.self, forCellWithReuseIdentifier: "CatsCollectionViewCell")
         view.backgroundColor = .systemGray6
         return view
     }()
@@ -47,6 +61,8 @@ class HomeViewController: UIViewController {
         setupView()
         
         viewModel.fetchDogs()
+        viewModel.fetchCats()
+        
         viewModel.success = {
             self.collectionView.reloadData()
         }
@@ -70,14 +86,22 @@ extension HomeViewController: UICollectionViewDataSource,UICollectionViewDelegat
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        1
+        2
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DogsCollectionViewCell", for: indexPath) as? DogsCollectionViewCell else { return UICollectionViewCell() }
-        
-        cell.configure(with: viewModel.breeds)
-        return cell
+        if indexPath.row == 0 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DogsCollectionViewCell", for: indexPath) as? DogsCollectionViewCell else { return UICollectionViewCell() }
+            
+            cell.configure(with: viewModel.dogs)
+            cell.delegate = self
+            return cell
+        } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CatsCollectionViewCell", for: indexPath) as? CatsCollectionViewCell else { return UICollectionViewCell() }
+            cell.delegate = self
+            cell.configure(with: viewModel.cats)
+            return cell
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

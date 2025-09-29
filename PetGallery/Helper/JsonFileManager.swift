@@ -23,6 +23,7 @@ class JsonFileManager {
     
     func readUserDataFromFile(completion: (([User]) -> Void)) {
         let path = getFilePath()
+        print(path)
         
         guard FileManager.default.fileExists(atPath: path.path) else {
             completion([])

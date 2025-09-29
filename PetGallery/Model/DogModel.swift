@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Breed: Codable {
+struct Dog: Codable {
     let weight: Weight
     let height: Height
     let id: Int

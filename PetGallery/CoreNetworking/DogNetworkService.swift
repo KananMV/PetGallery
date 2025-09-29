@@ -13,14 +13,14 @@ class DogNetworkService {
     
     private init() {}
     
-    func getBreeds(completion: @escaping (Result<[Breed], Error>) -> Void) {
+    func getDogs(completion: @escaping (Result<[Dog], Error>) -> Void) {
         let url = "\(Constants.dogBaseURL.rawValue)/breeds"
         
         let headers: HTTPHeaders = [
             "x-api-key": Constants.dogApiKey
         ]
         
-        AF.request(url, headers: headers).responseDecodable(of: [Breed].self) { response in
+        AF.request(url, headers: headers).responseDecodable(of: [Dog].self) { response in
             switch response.result {
             case .success(let breeds):
                 completion(.success(breeds))

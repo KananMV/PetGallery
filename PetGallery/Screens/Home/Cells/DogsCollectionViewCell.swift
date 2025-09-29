@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol DogsCollectionViewCellDelegate: AnyObject {
+    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didSelectDog dog: Dog)
+}
+
 class DogsCollectionViewCell: UICollectionViewCell {
+    
+    weak var delegate: DogsCollectionViewCellDelegate?
     
     private let dogLabel: UILabel = {
         let label = UILabel()
@@ -51,21 +57,20 @@ class DogsCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private var breeds: [Breed] = [] {
+    private var dogs: [Dog] = [] {
         didSet {
             collectionView.reloadData()
         }
     }
     
-    func configure(with breeds: [Breed]) {
-        self.breeds = breeds
+    func configure(with dogs: [Dog]) {
+        self.dogs = dogs
     }
     
     private func setupView() {
         contentView.backgroundColor = .clear
         contentView.addSubview(dogIndicatorView)
         contentView.addSubview(collectionView)
-        print(breeds.count)
         
         dogLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -89,14 +94,14 @@ class DogsCollectionViewCell: UICollectionViewCell {
 
 extension DogsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        breeds.count
+        dogs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PetInfoCell", for: indexPath) as? PetInfoCell else { return UICollectionViewCell() }
         
-        let breed = breeds[indexPath.item]
-        cell.configure(with: breed)
+        let dog = dogs[indexPath.item]
+        cell.configure(with: dog)
         return cell
     }
     
@@ -107,5 +112,10 @@ extension DogsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDe
         let height = width * 1.7
         
         return CGSize(width: width, height: height)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedDog = dogs[indexPath.item]
+        delegate?.dogsCollectionViewCell(self, didSelectDog: selectedDog)
     }
 }

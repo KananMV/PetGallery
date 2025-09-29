@@ -16,10 +16,6 @@ class PetInfoCell: UICollectionViewCell {
         view.addSubview(petImage)
         view.addSubview(heartView)
         view.addSubview(stackView)
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.8
-        view.layer.shadowOffset = CGSize(width: 4, height: 4)
-        view.layer.shadowRadius = 4
         view.layer.cornerRadius = 20
         view.layer.masksToBounds = false
         view.clipsToBounds = true
@@ -28,8 +24,7 @@ class PetInfoCell: UICollectionViewCell {
     
     private let petImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "dogIcon")
-        image.contentMode = .scaleAspectFill
+        image.contentMode = .scaleToFill
         image.clipsToBounds = true
         return image
     }()
@@ -121,15 +116,26 @@ class PetInfoCell: UICollectionViewCell {
             
         }
     }
-    func configure(with breed: Breed) {
-        nameLabel.text = breed.name
-        let bredForText = (breed.bredFor?.isEmpty == false) ? breed.bredFor! : "Unknown"
+    func configure(with dog: Dog) {
+        nameLabel.text = dog.name
+        let bredForText = (dog.bredFor?.isEmpty == false) ? dog.bredFor! : "Unknown"
         bredForLabel.text = bredForText
         
-        if let imageUrlString = breed.image?.url, let url = URL(string: imageUrlString) {
+        if let imageUrlString = dog.image?.url, let url = URL(string: imageUrlString) {
             petImage.kf.setImage(with: url, placeholder: UIImage(named: "dogIcon"))
         } else {
             petImage.image = UIImage(named: "dogIcon")
+        }
+    }
+    func configure(with cat: Cat) {
+        nameLabel.text = cat.name
+        let bredForText = (cat.description?.isEmpty == false) ? cat.description! : "Unknown"
+        bredForLabel.text = bredForText
+        
+        if let imageUrlString = cat.image?.url, let url = URL(string: imageUrlString) {
+            petImage.kf.setImage(with: url, placeholder: UIImage(named: "catIcon"))
+        } else {
+            petImage.image = UIImage(named: "catIcon")
         }
     }
 }

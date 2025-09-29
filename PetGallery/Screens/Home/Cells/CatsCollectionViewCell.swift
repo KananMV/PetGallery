@@ -7,11 +7,17 @@
 
 import UIKit
 
+protocol CatsCollectionViewCellDelegate: AnyObject {
+    func catsCollectionViewCell (_ cell: CatsCollectionViewCell, didselectCat cat: Cat )
+}
+
 class CatsCollectionViewCell: UICollectionViewCell {
+    
+    weak var delegate: CatsCollectionViewCellDelegate?
     
     private let catLabel: UILabel = {
         let label = UILabel()
-        label.text = "Dogs"
+        label.text = "Cats"
         label.textColor = .white
         label.font = .systemFont(ofSize: 24,weight: .semibold)
         return label
@@ -19,7 +25,7 @@ class CatsCollectionViewCell: UICollectionViewCell {
     
     private lazy var catIndicatorView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "redColorForUI")
+        view.backgroundColor = UIColor(named: "blueColorForUI")
         view.layer.cornerRadius = 28
         view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         view.clipsToBounds = true
@@ -51,21 +57,21 @@ class CatsCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private var breeds: [Breed] = [] {
+    private var cats: [Cat] = [] {
         didSet {
             collectionView.reloadData()
         }
     }
     
-    func configure(with breeds: [Breed]) {
-        self.breeds = breeds
+    func configure(with cats: [Cat]) {
+        self.cats = cats
     }
     
     private func setupView() {
         contentView.backgroundColor = .clear
         contentView.addSubview(catIndicatorView)
         contentView.addSubview(collectionView)
-        print(breeds.count)
+        print(cats.count)
         
         catLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -89,14 +95,14 @@ class CatsCollectionViewCell: UICollectionViewCell {
 
 extension CatsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        breeds.count
+        cats.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PetInfoCell", for: indexPath) as? PetInfoCell else { return UICollectionViewCell() }
         
-        let breed = breeds[indexPath.item]
-        cell.configure(with: breed)
+        let cat = cats[indexPath.item]
+        cell.configure(with: cat)
         return cell
     }
     
@@ -107,5 +113,10 @@ extension CatsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDe
         let height = width * 1.7
         
         return CGSize(width: width, height: height)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedCat = cats[indexPath.item]
+        delegate?.catsCollectionViewCell(self, didselectCat: selectedCat)
     }
 }
