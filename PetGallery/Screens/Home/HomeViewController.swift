@@ -7,20 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, DogsCollectionViewCellDelegate, CatsCollectionViewCellDelegate {
-    func catsCollectionViewCell(_ cell: CatsCollectionViewCell, didselectCat cat: Cat) {
-        let detailVC = DetailsViewController()
-        detailVC.configure(with: cat)
-        navigationController?.pushViewController(detailVC, animated: true)
-    }
-    
-    
-    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didSelectDog dog: Dog) {
-        let detailVC = DetailsViewController()
-        detailVC.configure(with: dog)
-        navigationController?.pushViewController(detailVC, animated: true)
-    }
-    
+class HomeViewController: UIViewController {
     
     private let viewModel = HomeViewModel()
     
@@ -68,6 +55,7 @@ class HomeViewController: UIViewController, DogsCollectionViewCellDelegate, Cats
         }
     }
     
+    
     private func setupView() {
         view.backgroundColor = .systemBackground
         navigationItem.titleView = titleLabel
@@ -94,6 +82,7 @@ extension HomeViewController: UICollectionViewDataSource,UICollectionViewDelegat
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DogsCollectionViewCell", for: indexPath) as? DogsCollectionViewCell else { return UICollectionViewCell() }
             
             cell.configure(with: viewModel.dogs)
+            
             cell.delegate = self
             return cell
         } else {
@@ -109,5 +98,37 @@ extension HomeViewController: UICollectionViewDataSource,UICollectionViewDelegat
         let height = width * 0.75
         
         return CGSize(width: width, height: height)
+    }
+}
+
+extension HomeViewController: DogsCollectionViewCellDelegate {
+    
+    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didSelectDog dog: Dog) {
+        let detailVC = DetailsViewController()
+        detailVC.configure(with: dog)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didToggleHeartFor dog: Dog, isLiked: Bool) {
+        if isLiked {
+            CoreDataService.shared.saveFavorite(id: String(dog.id))
+        } else {
+            CoreDataService.shared.deleteItemById(id: String(dog.id))
+        }
+    }
+}
+
+extension HomeViewController: CatsCollectionViewCellDelegate {
+    func catsCollectionViewCell(_ cell: CatsCollectionViewCell, didToggleHeartFor cat: Cat, isLiked: Bool) {
+        if isLiked {
+            CoreDataService.shared.saveFavorite(id: cat.id)
+        } else {
+            CoreDataService.shared.deleteItemById(id: cat.id)
+        }
+    }
+    func catsCollectionViewCell(_ cell: CatsCollectionViewCell, didselectCat cat: Cat) {
+        let detailVC = DetailsViewController()
+        detailVC.configure(with: cat)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

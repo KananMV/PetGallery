@@ -34,12 +34,13 @@ class TabBarViewController: UITabBarController {
         let profileVC = ProfileViewController()
         let profileNav = UINavigationController(rootViewController: profileVC)
         profileNav.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(named: "profileIcon"), selectedImage: UIImage(named: "profileIconFilled"))
-//
-//        let accountVC = AccountViewController()
-//        let accountNav = UINavigationController(rootViewController: accountVC)
-//        accountNav.tabBarItem = UITabBarItem(title: "Account", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
         
-        viewControllers = [homeNav, profileNav /*accountNav*/]
+        let favoritesVC = FavoritesViewController()
+        let favoritesNav = UINavigationController(rootViewController: favoritesVC)
+        favoritesNav.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(named: "favoritesTabIcon"), selectedImage: UIImage(named: "favoritesTabIconFilled"))
+      
+        
+        viewControllers = [homeNav, favoritesNav, profileNav]
         
         
     }

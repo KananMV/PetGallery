@@ -9,6 +9,9 @@ import UIKit
 import Kingfisher
 
 class PetInfoCell: UICollectionViewCell {
+    var onHeartToggle: ((Bool) -> Void)?
+    
+    private var isLiked = false
     
     private lazy var containerView: UIView = {
         let view = UIView()
@@ -35,6 +38,10 @@ class PetInfoCell: UICollectionViewCell {
         view.backgroundColor = .white
         view.clipsToBounds = true
         view.layer.cornerRadius = 12
+        view.isUserInteractionEnabled = true
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(toggleHeart))
+        view.addGestureRecognizer(tap)
         return view
     }()
     
@@ -69,6 +76,28 @@ class PetInfoCell: UICollectionViewCell {
         view.addArrangedSubview(bredForLabel)
         return view
     }()
+    
+    @objc private func toggleHeart() {
+        isLiked.toggle()
+        
+        if isLiked {
+            heartImage.image = UIImage(systemName: "heart.fill")
+            heartImage.tintColor = .systemRed
+        } else {
+            heartImage.image = UIImage(systemName: "heart")
+            heartImage.tintColor = .darkGray
+        }
+        UIView.animate(withDuration: 0.2,
+                       animations: {
+            self.heartView.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.heartView.transform = .identity
+            }
+        })
+        
+        onHeartToggle?(isLiked)
+    }
 
     
     override init(frame: CGRect) {
@@ -116,8 +145,11 @@ class PetInfoCell: UICollectionViewCell {
             
         }
     }
-    func configure(with dog: Dog) {
+    func configure(with dog: Dog,isLiked: Bool) {
         nameLabel.text = dog.name
+        self.isLiked = isLiked
+        heartImage.image = isLiked ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        heartImage.tintColor = isLiked ? .systemRed : .darkGray
         let bredForText = (dog.bredFor?.isEmpty == false) ? dog.bredFor! : "Unknown"
         bredForLabel.text = bredForText
         
@@ -127,8 +159,11 @@ class PetInfoCell: UICollectionViewCell {
             petImage.image = UIImage(named: "dogIcon")
         }
     }
-    func configure(with cat: Cat) {
+    func configure(with cat: Cat,isLiked: Bool) {
         nameLabel.text = cat.name
+        self.isLiked = isLiked
+        heartImage.image = isLiked ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        heartImage.tintColor = isLiked ? .systemRed : .darkGray
         let bredForText = (cat.description?.isEmpty == false) ? cat.description! : "Unknown"
         bredForLabel.text = bredForText
         

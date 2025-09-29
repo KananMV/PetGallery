@@ -9,6 +9,7 @@ import UIKit
 
 protocol DogsCollectionViewCellDelegate: AnyObject {
     func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didSelectDog dog: Dog)
+    func dogsCollectionViewCell(_ cell: DogsCollectionViewCell, didToggleHeartFor dog: Dog, isLiked: Bool)
 }
 
 class DogsCollectionViewCell: UICollectionViewCell {
@@ -101,7 +102,12 @@ extension DogsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDe
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PetInfoCell", for: indexPath) as? PetInfoCell else { return UICollectionViewCell() }
         
         let dog = dogs[indexPath.item]
-        cell.configure(with: dog)
+        let isLiked = CoreDataService.shared.fetchFavoriteIds().contains(String(dog.id))
+        cell.configure(with: dog,isLiked: isLiked)
+        
+        cell.onHeartToggle = { isLiked in
+            self.delegate?.dogsCollectionViewCell(self, didToggleHeartFor: dog, isLiked: isLiked)
+        }
         return cell
     }
     
