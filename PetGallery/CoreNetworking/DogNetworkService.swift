@@ -29,4 +29,22 @@ class DogNetworkService {
             }
         }
     }
+    
+    func getDogById(id: String, completion: @escaping (Result<Dog, Error>) -> Void) {
+        let url = "\(AppURL.dogBase.rawValue)/breeds/\(id)"
+        
+        let headers: HTTPHeaders = [
+            "x-api-key": Constants.dogApiKey
+        ]
+        
+        AF.request(url, headers: headers)
+            .responseDecodable(of: Dog.self) { response in
+                switch response.result {
+                case .success(let dog):
+                    completion(.success(dog))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+    }
 }

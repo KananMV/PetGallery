@@ -29,7 +29,24 @@ class CatNetworkService {
             }
             
         }
+    }
+    
+    func getCatById(id: String, completion: @escaping (Result<Cat, Error>) -> Void) {
+        let url = "\(AppURL.catBase.rawValue)/breeds/\(id)"
         
+        let headers: HTTPHeaders = [
+            "x-api-key": Constants.catApiKey
+        ]
+        
+        AF.request(url, headers: headers)
+            .responseDecodable(of: Cat.self) { response in
+                switch response.result {
+                case .success(let breed):
+                    completion(.success(breed))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
     }
     
 }

@@ -11,6 +11,13 @@ class HomeViewController: UIViewController {
     
     private let viewModel = HomeViewModel()
     
+    private let loadingView: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.color = .systemRed
+        spinner.hidesWhenStopped = true
+        return spinner
+    }()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -47,22 +54,48 @@ class HomeViewController: UIViewController {
 
         setupView()
         
+        
+        showLoading()
+        
         viewModel.fetchDogs()
         viewModel.fetchCats()
         
         viewModel.success = {
             self.collectionView.reloadData()
+            self.hideLoading()
         }
+        
+        
     }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
+    }
+
     private func setupView() {
         view.backgroundColor = .systemBackground
         navigationItem.titleView = titleLabel
         view.addSubview(collectionView)
+        view.addSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+    
+    private func showLoading() {
+        loadingView.startAnimating()
+        collectionView.isHidden = true
+    }
+    
+    private func hideLoading() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.loadingView.stopAnimating()
+            self.collectionView.isHidden = false
         }
     }
 
