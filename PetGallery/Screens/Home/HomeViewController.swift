@@ -53,10 +53,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
 
         setupView()
-        
-        
         showLoading()
-        
         viewModel.fetchDogs()
         viewModel.fetchCats()
         
